@@ -1,0 +1,6 @@
+{
+  "name": "Tutor Practice Paper Builder",
+  "description": "Create customized practice test papers, track student progress, and print exam worksheets from an NCERT question bank.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

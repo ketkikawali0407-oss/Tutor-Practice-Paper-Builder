@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutor Practice Paper Builder</title>
+  <meta name="description" content="Generate customized practice test papers, track student progress, and print exam worksheets from an NCERT question bank." />
+  <meta property="og:title" content="Tutor Practice Paper Builder" />
+  <meta property="og:description" content="Create customized practice test papers, track student progress, and print exam worksheets from an NCERT question bank." />
+  <link rel="stylesheet" href="./styles.css" />
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <!-- Header & Navigation -->
+  <header class="app-header no-print">
+    <div class="header-container">
+      <div class="logo-group">
+        <div class="logo-icon">📝</div>
+        <div class="logo-text">
+          <h1>Tutor Practice Paper Builder</h1>
+          <p>NCERT-Aligned Question Bank &bull; Grades 6–10</p>
+        </div>
+      </div>
+      <nav class="nav-tabs" id="navTabs">
+        <button class="nav-tab-btn active" data-tab="tab-builder">
+          <span>📝</span> Generate Paper
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-students">
+          <span>👥</span> Students
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-questions">
+          <span>📚</span> Question Bank
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-papers">
+          <span>📑</span> Saved Papers
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-settings">
+          <span>⚙️</span> Data &amp; Backup
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    <!-- TAB 1: GENERATE PRACTICE PAPER -->
+    <section id="tab-builder" class="tab-view active">
+      <div class="builder-grid">
+        <!-- Configuration Card (Left Column) -->
+        <div class="card no-print">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⚙️ Paper Settings</div>
+              <div class="card-subtitle">Configure worksheet parameters</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="builderForm" onsubmit="return false;">
+              <!-- Student Selection -->
+              <div class="form-group">
+                <label class="form-label" for="studentSelect">
+                  <span>Student Target</span>
+                  <span id="studentCountBadge" class="badge badge-gray">0 students</span>
+                </label>
+                <div class="student-bar">
+                  <select id="studentSelect" class="form-select">
+                    <option value="">-- Generic Paper (No Student) --</option>
+                  </select>
+                  <button type="button" id="btnQuickAddStudent" class="btn-icon-addon" title="Add New Student">
+                    + New
+                  </button>
+                </div>
+                <!-- Weak Topic Target Notice (Shown when student has weak topics) -->
+                <div id="studentWeakNotice" class="student-target-badge" style="display: none;">
+                  <span id="weakNoticeText">Target weak topic</span>
+                  <button type="button" id="btnApplyWeakTopics">Apply Focus</button>
+                </div>
+              </div>
+
+              <!-- Paper Title -->
+              <div class="form-group">
+                <label class="form-label" for="paperTitle">Paper Title / Heading</label>
+                <input type="text" id="paperTitle" class="form-control" placeholder="e.g. Weekly Review Worksheet" value="Practice Assessment" />
+              </div>
+
+              <!-- Grade & Subject -->
+              <div class="input-row form-group">
+                <div>
+                  <label class="form-label" for="gradeSelect">Grade / Class</label>
+                  <select id="gradeSelect" class="form-select">
+                    <option value="6">Grade 6</option>
+                    <option value="7">Grade 7</option>
+                    <option value="8" selected>Grade 8</option>
+                    <option value="9">Grade 9</option>
+                    <option value="10">Grade 10</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label" for="subjectSelect">Subject</label>
+                  <select id="subjectSelect" class="form-select">
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Social Studies">Social Studies</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Topics Selection -->
+              <div class="form-group">
+                <div class="form-label">
+                  <span>Select Topics</span>
+                  <div class="topic-actions">
+                    <button type="button" id="btnSelectAllTopics" class="btn-link">Select all</button>
+                    <span>&bull;</span>
+                    <button type="button" id="btnClearTopics" class="btn-link">Clear</button>
+                  </div>
+                </div>
+                <div id="topicsContainer" class="topic-selection-box">
+                  <!-- Dynamically populated checkboxes -->
+                </div>
+              </div>
+
+              <!-- Question Types Multi-Select -->
+              <div class="form-group">
+                <div class="form-label">
+                  <span>Question Types</span>
+                  <div class="topic-actions">
+                    <button type="button" id="btnSelectAllTypes" class="btn-link">Select all</button>
+                    <span>&bull;</span>
+                    <button type="button" id="btnClearTypes" class="btn-link">Clear</button>
+                  </div>
+                </div>
+                <div class="qtype-container" id="qtypesContainer">
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="mcq" checked />
+                    <span class="qtype-badge">🔘 MCQ (1M)</span>
+                  </label>
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="short" checked />
+                    <span class="qtype-badge">✍️ Short Answer (2M)</span>
+                  </label>
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="fill_blank" checked />
+                    <span class="qtype-badge">📝 Fill Blanks (1M)</span>
+                  </label>
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="true_false" checked />
+                    <span class="qtype-badge">⚖️ True / False (1M)</span>
+                  </label>
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="long" checked />
+                    <span class="qtype-badge">📜 Long Answer (5M)</span>
+                  </label>
+                  <label class="qtype-item">
+                    <input type="checkbox" name="qType" value="assertion_reason" checked />
+                    <span class="qtype-badge">🧠 Assertion-Reason (1M)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Generation Mode Toggle (By Questions vs By Total Marks) -->
+              <div class="form-group">
+                <label class="form-label">Generate Practice Paper By</label>
+                <div class="gen-mode-toggle" id="genModeToggle">
+                  <label class="gen-mode-option active" id="labelModeCount">
+                    <input type="radio" name="genMode" id="genModeCount" value="count" checked />
+                    <span>📋 Number of Questions</span>
+                  </label>
+                  <label class="gen-mode-option" id="labelModeMarks">
+                    <input type="radio" name="genMode" id="genModeMarks" value="marks" />
+                    <span>🎯 Total Marks</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Question Count (Visible when Generate by Questions) -->
+              <div id="countModeContainer" class="form-group">
+                <label class="form-label" for="questionCount">Target Question Count</label>
+                <select id="questionCount" class="form-select">
+                  <option value="5" selected>5 Questions</option>
+                  <option value="8">8 Questions</option>
+                  <option value="10">10 Questions</option>
+                  <option value="15">15 Questions</option>
+                  <option value="20">20 Questions</option>
+                  <option value="25">25 Questions</option>
+                  <option value="30">30 Questions</option>
+                </select>
+              </div>
+
+              <!-- Total Marks Controls (Visible when Generate by Total Marks) -->
+              <div id="marksModeContainer" class="form-group" style="display: none;">
+                <label class="form-label" for="targetMarksInput">Target Total Marks (Max 50 M)</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem;">
+                  <input type="number" id="targetMarksInput" class="form-control" value="25" min="5" max="50" step="1" style="font-weight: 600; font-size: 1rem;" />
+                  <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Marks (Max 50)</span>
+                </div>
+                <div class="preset-marks-bar">
+                  <span style="font-size: 0.76rem; color: var(--text-muted); margin-right: 0.2rem;">Presets:</span>
+                  <button type="button" class="btn-preset-mark" data-marks="20">20 M</button>
+                  <button type="button" class="btn-preset-mark active" data-marks="25">25 M</button>
+                  <button type="button" class="btn-preset-mark" data-marks="50">50 M</button>
+                </div>
+                <!-- Live marks counter -->
+                <div id="marksLiveCounter" class="marks-live-counter">
+                  Currently: <strong id="marksCurrentAvailable">0</strong> marks available / <strong id="marksTargetGoal">25</strong> marks target
+                </div>
+              </div>
+
+              <!-- Difficulty Mix & Time Allowed -->
+              <div class="input-row form-group">
+                <div>
+                  <label class="form-label" for="difficultySelect">Difficulty Mix</label>
+                  <select id="difficultySelect" class="form-select">
+                    <option value="balanced">Balanced (All Levels)</option>
+                    <option value="1">Level 1 (Easy)</option>
+                    <option value="2">Level 2 (Medium)</option>
+                    <option value="3">Level 3 (Challenging)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label" for="durationMinutes">Time Allowed</label>
+                  <select id="durationMinutes" class="form-select">
+                    <option value="15">15 mins</option>
+                    <option value="20">20 mins</option>
+                    <option value="30" selected>30 mins</option>
+                    <option value="45">45 mins</option>
+                    <option value="60">60 mins</option>
+                    <option value="90">90 mins</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Live Question Availability Notice -->
+              <div id="availabilityNotice" class="availability-notice" style="display: none;"></div>
+
+              <div style="margin-top: 1rem;">
+                <button type="button" id="btnGeneratePaper" class="btn btn-primary btn-block">
+                  <span>✨ Generate Practice Paper</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Preview Column (Right Column) -->
+        <div class="preview-column">
+          <!-- Action Bar (Displayed when paper is generated) -->
+          <div id="paperActionBar" class="preview-action-bar no-print" style="display: none;">
+            <div class="preview-action-group">
+              <button type="button" id="btnPrintPaper" class="btn btn-primary btn-sm" title="Print Student Worksheet">
+                <span>🖨️ Print Worksheet</span>
+              </button>
+              <button type="button" id="btnPrintKey" class="btn btn-secondary btn-sm" title="Print with Full Solutions">
+                <span>🔑 Print Answer Key</span>
+              </button>
+              <button type="button" id="btnToggleAnswers" class="btn btn-secondary btn-sm">
+                <span id="toggleAnswersText">👁️ Show Answers</span>
+              </button>
+            </div>
+            <div class="preview-action-group">
+              <button type="button" id="btnShufflePaper" class="btn btn-secondary btn-sm" title="Regenerate with same settings">
+                <span>🔄 Shuffle</span>
+              </button>
+              <button type="button" id="btnSavePaper" class="btn btn-secondary btn-sm" title="Save paper to student records">
+                <span>💾 Save Paper</span>
+              </button>
+              <button type="button" id="btnGradePaper" class="btn btn-success btn-sm" title="Record score & evaluate student">
+                <span>✍️ Grade Paper</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Printable Worksheet Canvas -->
+          <div id="paperCanvas">
+            <div class="empty-paper-state">
+              <div class="empty-icon">📄</div>
+              <h3>No Practice Paper Generated Yet</h3>
+              <p>Select a student, grade, and topic from the left panel and click <strong>"Generate Practice Paper"</strong> to create a ready-to-print worksheet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STUDENTS MANAGEMENT -->
+    <section id="tab-students" class="tab-view">
+      <div class="students-header">
+        <div>
+          <h2>Students Directory</h2>
+          <p class="card-subtitle">Manage students and track topic-level strengths &amp; weak areas.</p>
+        </div>
+        <button type="button" id="btnOpenAddStudentModal" class="btn btn-primary">
+          <span>+ Add Student</span>
+        </button>
+      </div>
+      <div id="studentCardsContainer" class="student-cards-grid">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 3: QUESTION BANK EXPLORER -->
+    <section id="tab-questions" class="tab-view">
+      <div class="students-header">
+        <div>
+          <h2>Question Bank</h2>
+          <p class="card-subtitle">Browse and manage questions across subjects and grades.</p>
+        </div>
+        <button type="button" id="btnOpenAddQuestionModal" class="btn btn-primary">
+          <span>+ Add Custom Question</span>
+        </button>
+      </div>
+
+      <div class="qb-filters no-print">
+        <div class="qb-search">
+          <input type="text" id="qbSearchInput" class="form-control" placeholder="Search questions or keywords..." />
+        </div>
+        <div style="width: 140px;">
+          <select id="qbGradeFilter" class="form-select">
+            <option value="">All Grades</option>
+            <option value="6">Grade 6</option>
+            <option value="7">Grade 7</option>
+            <option value="8">Grade 8</option>
+            <option value="9">Grade 9</option>
+            <option value="10">Grade 10</option>
+          </select>
+        </div>
+        <div style="width: 160px;">
+          <select id="qbSubjectFilter" class="form-select">
+            <option value="">All Subjects</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="English">English</option>
+            <option value="Social Studies">Social Studies</option>
+          </select>
+        </div>
+        <div style="width: 150px;">
+          <select id="qbTopicFilter" class="form-select">
+            <option value="">All Topics</option>
+          </select>
+        </div>
+        <div style="width: 160px;">
+          <select id="qbTypeFilter" class="form-select">
+            <option value="">All Types</option>
+            <option value="mcq">MCQ</option>
+            <option value="short">Short Answer</option>
+            <option value="fill_blank">Fill in Blanks</option>
+            <option value="true_false">True / False</option>
+            <option value="long">Long Answer (5M)</option>
+            <option value="assertion_reason">Assertion-Reason</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+        Showing <strong id="qbMatchCount">0</strong> questions in bank
+      </div>
+
+      <div class="qb-table-wrap">
+        <table class="qb-table">
+          <thead>
+            <tr>
+              <th style="width: 100px;">Class &amp; Subject</th>
+              <th style="width: 140px;">Topic</th>
+              <th>Question &amp; Explanation</th>
+              <th style="width: 80px;">Type</th>
+              <th style="width: 70px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="qbTableBody">
+            <!-- Rendered by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: SAVED PAPERS & GRADEBOOK -->
+    <section id="tab-papers" class="tab-view">
+      <div class="students-header">
+        <div>
+          <h2>Saved Practice Papers</h2>
+          <p class="card-subtitle">Review previously generated papers, evaluate answers, and view scores.</p>
+        </div>
+      </div>
+
+      <div class="qb-table-wrap">
+        <table class="qb-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Student</th>
+              <th>Grade &amp; Subject</th>
+              <th>Questions</th>
+              <th>Status / Score</th>
+              <th style="width: 160px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedPapersTableBody">
+            <!-- Rendered by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: DATA & BACKUP -->
+    <section id="tab-settings" class="tab-view">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <div class="card-title">💾 Backup &amp; Restore Data</div>
+          </div>
+          <div class="card-body">
+            <p style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 1rem;">
+              Export all your student profiles, generated test papers, evaluated test scores, and custom question bank to a single JSON file.
+            </p>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button type="button" id="btnExportData" class="btn btn-primary">
+                <span>⬇️ Download Backup (JSON)</span>
+              </button>
+              <label class="btn btn-secondary" style="cursor: pointer;">
+                <span>⬆️ Restore from Backup</span>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔄 Question Bank Seeding</div>
+          </div>
+          <div class="card-body">
+            <p style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 1rem;">
+              Reset questions to default NCERT question set (Grades 6–10 Mathematics, Science, and English).
+            </p>
+            <button type="button" id="btnReseedBank" class="btn btn-secondary">
+              <span>Seed Question Bank Again</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: ADD / EDIT STUDENT -->
+  <div id="studentModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="studentModalTitle">Add New Student</h3>
+        <button type="button" class="modal-close" id="btnCloseStudentModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="studentForm" onsubmit="return false;">
+          <input type="hidden" id="studentModalId" />
+          <div class="form-group">
+            <label class="form-label" for="studentModalName">Full Name *</label>
+            <input type="text" id="studentModalName" class="form-control" placeholder="e.g. Aarav Sharma" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="studentModalGrade">Grade / Class *</label>
+            <select id="studentModalGrade" class="form-select">
+              <option value="6">Grade 6</option>
+              <option value="7">Grade 7</option>
+              <option value="8" selected>Grade 8</option>
+              <option value="9">Grade 9</option>
+              <option value="10">Grade 10</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subjects Enrolled</label>
+            <div style="display: flex; gap: 0.8rem; margin-top: 0.4rem; flex-wrap: wrap;">
+              <label style="font-size: 0.9rem; cursor: pointer;">
+                <input type="checkbox" id="subMath" value="Mathematics" checked /> Mathematics
+              </label>
+              <label style="font-size: 0.9rem; cursor: pointer;">
+                <input type="checkbox" id="subSci" value="Science" checked /> Science
+              </label>
+              <label style="font-size: 0.9rem; cursor: pointer;">
+                <input type="checkbox" id="subEng" value="English" checked /> English
+              </label>
+              <label style="font-size: 0.9rem; cursor: pointer;">
+                <input type="checkbox" id="subSst" value="Social Studies" checked /> Social Studies
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelStudentModal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnSaveStudentModal">Save Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM QUESTION -->
+  <div id="questionModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Custom Question</h3>
+        <button type="button" class="modal-close" id="btnCloseQuestionModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="questionForm" onsubmit="return false;">
+          <div class="input-row form-group">
+            <div>
+              <label class="form-label" for="qModalGrade">Grade</label>
+              <select id="qModalGrade" class="form-select">
+                <option value="6">Grade 6</option>
+                <option value="7">Grade 7</option>
+                <option value="8" selected>Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="qModalSubject">Subject</label>
+              <select id="qModalSubject" class="form-select">
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="English">English</option>
+                <option value="Social Studies">Social Studies</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-row form-group">
+            <div>
+              <label class="form-label" for="qModalTopic">Topic Name</label>
+              <input type="text" id="qModalTopic" class="form-control" placeholder="e.g. Linear Equations" required />
+            </div>
+            <div>
+              <label class="form-label" for="qModalDifficulty">Difficulty</label>
+              <select id="qModalDifficulty" class="form-select">
+                <option value="1">1 (Easy)</option>
+                <option value="2" selected>2 (Medium)</option>
+                <option value="3">3 (Challenging)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qModalType">Question Type</label>
+            <select id="qModalType" class="form-select">
+              <option value="mcq">Multiple Choice (MCQ - 1M)</option>
+              <option value="short">Short Answer (2M)</option>
+              <option value="fill_blank">Fill in the Blanks (1M)</option>
+              <option value="true_false">True / False (1M)</option>
+              <option value="long">Long Answer (5M)</option>
+              <option value="assertion_reason">Assertion-Reason (1M)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qModalText">Question Text</label>
+            <textarea id="qModalText" class="form-control" rows="2" placeholder="Write question statement here..." required></textarea>
+          </div>
+          <!-- MCQ Options Fields (Visible if type is mcq) -->
+          <div id="qModalMcqOptions">
+            <div class="form-group">
+              <label class="form-label">Options (A, B, C, D)</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <input type="text" id="qOptA" class="form-control" placeholder="Option A" />
+                <input type="text" id="qOptB" class="form-control" placeholder="Option B" />
+                <input type="text" id="qOptC" class="form-control" placeholder="Option C" />
+                <input type="text" id="qOptD" class="form-control" placeholder="Option D" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qModalAnswer">Correct Answer</label>
+            <input type="text" id="qModalAnswer" class="form-control" placeholder="Correct answer text or option matching value" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qModalExplanation">Explanation / Solution Steps</label>
+            <textarea id="qModalExplanation" class="form-control" rows="2" placeholder="Step by step reasoning for the student..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelQuestionModal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnSaveQuestionModal">Save Question</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GRADE PRACTICE PAPER -->
+  <div id="gradeModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Evaluate Practice Paper</h3>
+          <p id="gradeModalSubtitle" class="card-subtitle">Mark questions as correct or incorrect</p>
+        </div>
+        <button type="button" class="modal-close" id="btnCloseGradeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="gradeQuestionsList">
+          <!-- Rendered dynamically -->
+        </div>
+        <div style="margin-top: 1rem; padding: 0.85rem; background: var(--bg); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+          <span>Calculated Score:</span>
+          <span style="font-size: 1.15rem; font-weight: 700; color: var(--primary);" id="gradeCalculatedScore">0 / 0 (0%)</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelGradeModal">Cancel</button>
+        <button type="button" class="btn btn-success" id="btnSubmitGradeModal">Record Result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container no-print"></div>
+
+  <!-- Script files -->
+  <script src="./store.js"></script>
+  <script src="./questionBank.js"></script>
+  <script src="./app.js"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
